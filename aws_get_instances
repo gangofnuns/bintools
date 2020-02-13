@@ -1,0 +1,13 @@
+#!/bin/bash
+
+aws ec2 \
+    --region us-west-2  \
+    describe-instances | \
+    jq -r '.[] | .[] | .Instances[] | (.Tags[] | select(.Key == "Name") | .Value)+"|"+.PrivateIpAddress+"|"+.PublicIpAddress' | \
+    grep -v ' ' | \
+    perl -p -e 's/[\|]+$//g; s/ //g' | \
+    sort
+
+
+# for reference
+#jq '.[] | .[] | .Instances[] | (.Tags[] | select(.Key == "Name") | "Name:"+.Value)+":PrivateIP:"+.PrivateIpAddress+":PublicIP:"+.PublicIpAddress' 

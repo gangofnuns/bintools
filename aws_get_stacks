@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Echo a list of current customers 
+# from a list of all installed rds clusters. 
+# ------------------------------------------
+# Current customer list: 
+for c in $(./aws_get_rds_clusters | grep amd | grep -vE 'demo|qa' | cut -d'-' -f 1); do
+    echo ${c}
+done
+

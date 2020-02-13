@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+JSON=$(aws rds describe-db-clusters \
+    --region us-west-2 | \
+    jq '. | .DBClusters[] | { Endpoint: .Endpoint }' | \
+    jq -s)
+
+#echo JSON: $JSON
+
+for line in $(echo ${JSON} | jq -r '.[] | .Endpoint'); do 
+    echo $line | cut -d'.' -f 1
+    #CNF_FILE=~/my_cnf/${CLUSTER_NAME}.cnf
+    #cnf_string="# ${CLUSTER_NAME}\n[client]\nuser=root\npassword=\nhost=${line}\n"
+    #echo -ne ${cnf_string} > ${CNF_FILE}
+done
+

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Log into the prod ECR docker repository. 
+#
+eval $(aws ecr get-login --no-include-email)
+

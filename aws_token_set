@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# prod is the default. 
+# add 'test' as an argument to get test env. 
+#
+if [[ "$1" == "test" ]]; then 
+    ARGS="--profile test"
+fi 
+
+echo ARGS: ${ARGS}
+
+CALLER=$(aws sts get-caller-identity --query Arn ${ARGS})
+echo CALLER: ${CALLER}
+
+AWS_MFA_SERIAL=$(aws sts get-caller-identity \
+    --query Arn ${ARGS} \
+    --output text | sed "s/user/mfa/") 
+
+echo AWS_MFA_SERIAL: $AWS_MFA_SERIAL
+
+TOKEN=$(read -p "MFA: " CODE && \
+    aws sts get-session-token \
+        --serial-number ${AWS_MFA_SERIAL} \
+        --token ${CODE} ${ARGS} \
+        --output=text ) 
+
+if [[ -n "${TOKEN}" ]]; then 
+    echo "got ${TOKEN}" | sed -e 's/.*\(CREDENTIALS\).*/\1 XXXXXX/'
+else
+    echo "ERROR: Got no token from AWS."
+fi
+
+echo "Adding token to env..."
+eval $(echo ${TOKEN} | \
+    awk '{ print \
+        "export AWS_ACCESS_KEY_ID=" $2 "\n" \
+        "export AWS_SECRET_ACCESS_KEY=" $4 "\n" \
+        "export AWS_SESSION_TOKEN=" $5 \
+    }'
+)
+
+echo Success! You have an AWS token now.
