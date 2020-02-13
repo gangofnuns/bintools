@@ -25,4 +25,17 @@ Then add these lines to your .bash_profile...
 ```
 PATH=$PATH:~/bin
 ```
+# SUBMISSIONS WELCOME
+
+If you want to add to these tools, check out a branch on your laptop, like so: 
+
+```
+cd ~ 
+git clone https://github.com/gangofnuns/bintools.git ~/bin-dev
+```
+And then add a line like this to your .bash_profile...
+
+``` 
+PATH=$PATH~/bin-dev:~/bin
+```
 
